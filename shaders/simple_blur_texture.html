@@ -1,0 +1,44 @@
+<script id="vertex-shader" type="vertex">
+
+     attribute vec3 position;
+     attribute vec2 texture;
+     attribute vec4 colors;
+
+     uniform mat4 MV;
+     uniform mat4 P;
+
+     varying vec2 oTexture;
+     varying vec4 oColors;
+
+    void main(void) {
+      gl_Position = MV * P * vec4(position, 1.0);
+      oTexture = texture;
+      oColors  = colors;
+    }
+
+</script>
+
+
+<script id="fragment-shader" type="fragment">
+
+    precision mediump float;
+    varying vec2 oTexture;
+    varying vec4 oColors;
+    uniform sampler2D uSampler;
+    uniform float blurify;
+
+    void main(void) {
+
+       vec4 sam0, sam1, sam2, sam3;
+
+       float step = blurify / 100.0;
+
+       sam0 = texture2D(uSampler, vec2(oTexture.x - step, oTexture.y - step ) );
+       sam1 = texture2D(uSampler, vec2(oTexture.x + step, oTexture.y + step ) );
+       sam2 = texture2D(uSampler, vec2(oTexture.x - step, oTexture.y + step ) );
+       sam3 = texture2D(uSampler, vec2(oTexture.x + step, oTexture.y - step ) );
+
+       gl_FragColor =  (sam0 + sam1 + sam2 + sam3)/ 4.0;
+    }
+
+</script>
